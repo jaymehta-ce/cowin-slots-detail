@@ -1,0 +1,1 @@
+# cowin-slots-detail
