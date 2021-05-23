@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html> 
+<head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+  <title>Google Maps Multiple Markers</title> 
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript">
+  var locations = [];
+      var  addressLatLong = [];
+   async function loaddata() {
+    console.log("locations");
+    $.get( "/slots", function( data ) {
+        
+    console.log("locations22");
+        return data;
+    });
+  }
+
+var place = [];
+
+   async function initMap() {
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 10,
+      center: new google.maps.LatLng(23, 72),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+    var infowindow = new google.maps.InfoWindow();
+
+      var geocoder = new google.maps.Geocoder();
+    var marker, i;
+    $.get( "/slots", function( data ) {
+    locations = data;
+    console.log(locations.length);
+
+    for (i = 0; i < locations.length; i++) {  
+      var name = locations[i][0] + ",Ahmedabad, Gujarat - " + locations[i][3];
+      console.log(name);
+      geocoder.geocode( { 'address': name}, function(results, status) {
+      
+      if (status == google.maps.GeocoderStatus.OK) {
+          var latitude = results[0].geometry.location.lat();
+          var longitude = results[0].geometry.location.lng();
+
+        addressLatLong.push({ place : name , data : { lat : latitude, long : longitude } });
+        marker = new google.maps.Marker({
+            position: new google.maps.LatLng(name),
+            map: map
+        });
+
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+          return function() {
+            infowindow.setContent(locations[i][0]);
+            infowindow.open(map, marker);
+        }
+      })(marker, i));
+     }
+    });
+
+
+    } 
+    console.log(addressLatLong)
+}); 
+    
+  }
+  </script>    
+</head> 
+<body >
+  <div id="map" style="width: 500px; height: 400px;"></div>
+
+</body>
+
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap" async defer></script> 
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html> 
+<head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+ <script>
+   var socket = io.connect("http://localhost:8080");
+
+
+    // Connection established
+    socket.on('connect', function(data) {
+        console.log(data);       
+    });
+
+    socket.on('counter', function(data) {
+       //alert(data);
+       console.log(data);
+       var mytable = '';
+var currentdate = new Date(); 
+var datetime = currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+
+       if(data.data.length > 0)
+        {
+          
+       PlaySound();
+           mytable = `<table>
+       <th> </th> 
+<th> Center </th>
+<th> Address</th>
+<th> Available</th>
+<th> Age</th>
+<th> pincode</th>
+<th> </th>`;
+        for (var CELL of data.data) 
+        { 
+              mytable += '<tr>';
+               mytable += "<td>" + CELL.center + "</td>"; 
+               mytable += "<td>" + CELL.address + "</td>"; 
+               mytable += "<td>" + CELL.available + "</td>"; 
+               mytable += "<td>" + CELL.age + "</td>"; 
+               mytable += "<td>" + CELL.pincode + "</td>"; 
+
+              mytable += '</tr>';
+        }
+       
+        mytable += "</table><br/>";
+        }
+        else
+        {
+          mytable += '<table>';
+          mytable += '<tr> <td> No slots available </td>';
+
+          mytable += '</tr>';
+          mytable += '</table><br/>';
+        }
+        
+        var timelabel = '<label>Last Sync: <b>' + datetime + '</b></label> <br/>'; 
+        $('#result').prepend(mytable).prepend(timelabel);
+    });
+
+    function PlaySound() {
+          var audio = new Audio('success.mp3');
+            audio.play();
+    }
+    
+</script> 
+
+</head> 
+<body>
+   <div id="time">  </div> 
+    <div id="result">
+    </div>
+</body>
+</html>
